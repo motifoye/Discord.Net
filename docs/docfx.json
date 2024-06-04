@@ -1,0 +1,69 @@
+{
+  "metadata": [
+    {
+      "src": [
+        {
+          "src": "../src",
+          "files": ["**/*.csproj"],
+          "exclude": ["Discord.Net.DebugTools/*.csproj"]
+        }
+      ],
+      "dest": "api",
+      "filter": "filterConfig.yml"
+    }
+  ],
+  "build": {
+    "content": [
+      {
+        "files": ["api/**.yml", "api/index.md"]
+      },
+      {
+        "files": ["toc.yml", "index.md"]
+      },
+      {
+        "files": ["faq/**.md", "faq/**/toc.yml"]
+      },
+      {
+        "files": ["guides/**.md", "guides/**/toc.yml"]
+      },
+      {
+        "src": "../",
+        "files": ["CHANGELOG.md"]
+      }
+    ],
+    "resource": [
+      {
+        "files": [
+          "**/images/**",
+          "**/samples/**",
+          "langwordMapping.yml",
+          "marketing/logo/**.svg",
+          "marketing/logo/**.png",
+          "favicon.png",
+          "../src/Discord.Net.Examples/**.cs"
+        ]
+      }
+    ],
+    "output": "_site",
+    "template": [
+      "default",
+      "modern",
+      "_template/material",
+      "_template/description-generator"
+    ],
+    "postProcessors": [
+      "ExtractSearchIndex",
+      "DescriptionPostProcessor"
+    ],
+    "overwrite": "_overwrites/**/**.md",
+    "globalMetadata": {
+      "_appTitle": "Discord.Net Documentation",
+      "_appName": "Discord.Net",
+      "_appFooter": "Discord.Net © 2015-2024 3.15.0",
+      "_enableSearch": true,
+      "_appLogoPath": "marketing/logo/SVG/Logomark Purple.svg",
+      "_appFaviconPath": "favicon.png"
+    },
+    "xref": ["https://github.com/dotnet/docfx/raw/main/.xrefmap.json"]
+  }
+}
