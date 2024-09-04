@@ -1,9 +1,8 @@
 using Discord;
 using Discord.Interactions;
-using System;
-using System.Collections.Generic;
+using Discord.Commands;
+using System.Collections;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace InteractionFramework.Modules
@@ -50,8 +49,6 @@ namespace InteractionFramework.Modules
         }
 
 
-
-
         [SlashCommand("spawner", "swap")]
         public async Task Spawn()
         {
@@ -61,13 +58,14 @@ namespace InteractionFramework.Modules
                 .WithMinValues(1)
                 .WithMaxValues(1)
                 .AddOption("Option A", "opt-a", "Option B is lying!")
-                .AddOption("Option B", "opt-b", "Option A is telling the truth!");
+                .AddOption("Option B", "opt-cb", "Option A is telling the truth!");
 
             var builder = new ComponentBuilder()
                 .WithSelectMenu(menuBuilder);
 
             await ReplyAsync("Whos really lying?", components: builder.Build());
         }
+
 
         [SlashCommand("role", "роль пользователю")]
         public async Task Role_56df165df(IGuildUser userid, IRole role)
@@ -80,6 +78,54 @@ namespace InteractionFramework.Modules
             }
             await userid.AddRoleAsync(role);
             await RespondAsync(":wirning: роль");
+        }
+
+
+        [SlashCommand("unbanlist", "Команда убирает участника из списка заблокированных.")]
+        [RequireContext(ContextType.Guild)]//, ErrorMessage = "Эта команда используется на серверах."
+        [RequireUserPermission(GuildPermission.BanMembers)]
+        [RequireBotPermission(GuildPermission.BanMembers)]
+        public async Task UBab_8gfd8gd4f(int limit = 1000)
+        {
+            var bans = await Context.Guild.GetBansAsync(limit).FlattenAsync();
+
+            if (!bans.Any())
+                await RespondAsync("На сервере нет заблокированных участников.", ephemeral: true);
+
+            var smb = new SelectMenuBuilder();
+            smb.WithPlaceholder("Select user");
+            smb.WithCustomId("banlistmenu");
+            foreach (var ban in bans)
+                smb.AddOption(ban.User.Username, ban.User.Id.ToString());
+
+            var cb = new ComponentBuilder();
+            cb.WithSelectMenu(smb);
+
+            await RespondAsync(components: cb.Build(), ephemeral: true);
+            
+        }
+
+
+        [ComponentInteraction("banlistmenu")]
+        private async Task BanMenuHandler(string arg)
+        {
+            var user = await Context.Client.GetUserAsync(ulong.Parse(arg));
+
+            var embed = new EmbedBuilder();
+            embed.Color = Color.DarkGreen;
+            embed.WithAuthor(Context.User);
+            embed.Title = $"Участник *`{user}`* разблокирован на сервере";
+
+            await Context.Guild.RemoveBanAsync(user.Id);
+            await RespondAsync( embed: embed.Build());
+        }
+
+
+        [SlashCommand("test", "Команда для тестирования")]
+        public async Task TestCommand()
+        {
+            //await ReplyAsync('\u200B' + "");
+            await RespondAsync();
         }
     }
 }
